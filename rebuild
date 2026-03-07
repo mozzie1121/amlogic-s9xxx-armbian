@@ -275,7 +275,7 @@ init_var() {
 check_data() {
     # Columns of ${model_conf}:
     # 1.ID  2.MODEL  3.SOC  4.FDTFILE  5.UBOOT_OVERLOAD  6.MAINLINE_UBOOT  7.BOOTLOADER_IMG  8.DESCRIPTION
-    # 9.KERNEL_TAGS  10.PLATFORM  11.FAMILY  12.BOOT_CONF  13.CONTRIBUTORS  14.BOARD  15.BUILD
+    # 9.  10.PLATFORM  11.FAMILY  12.BOOT_CONF  13.CONTRIBUTORS  14.BOARD  15.BUILD
     [[ -f "${model_conf}" ]] || error_msg "Missing model config file: [ ${model_conf} ]"
 
     # Get a list of build devices
@@ -323,7 +323,7 @@ check_data() {
     ))
     kernel_from=("rk35xx/6.1.y")
     kernel_usage=""  
-    [[ "${#kernel_from[@]}" -eq 0 ]] && error_msg "Missing [ KERNEL_TAGS ] settings, stop building."
+    [[ "${#kernel_from[@]}" -eq 0 ]] && error_msg "Missing [  ] settings, stop building."
     # Replace custom kernel tags
     [[ -n "${kernel_usage}" ]] && {
         for ((i = 0; i < ${#kernel_from[@]}; i++)); do
@@ -583,7 +583,8 @@ confirm_version() {
     TRUST_IMG="${UBOOT_OVERLOAD}"
     MAINLINE_UBOOT="$(echo ${board_conf} | awk -F':' '{print $6}')"
     BOOTLOADER_IMG="$(echo ${board_conf} | awk -F':' '{print $7}')"
-    KERNEL_TAGS="$(echo ${board_conf} | awk -F':' '{print $9}')"
+    #KERNEL_TAGS="$(echo ${board_conf} | awk -F':' '{print $9}')"
+    KERNEL_TAGS="rk35xx/6.1.y"
     PLATFORM="$(echo ${board_conf} | awk -F':' '{print $10}')"
     FAMILY="$(echo ${board_conf} | awk -F':' '{print $11}')"
     BOOT_CONF="$(echo ${board_conf} | awk -F':' '{print $12}')"
