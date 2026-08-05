@@ -77,7 +77,46 @@ on:
           - gea-6319
           - gzpeite-p01
           - h28k
-          - h618-devboard
+Run # Resolve the Armbian image download URL
+  # Resolve the Armbian image download URL
+  armbian_url="https://dl.armbian.com/rock-3a/archive/Armbian_26.2.1_Rock-3a_noble_vendor_6.1.115_minimal.img.xz"
+  if  [[ -z "${armbian_url}" ]]; then
+      armbian_site="https://armbian.tnahosting.net/dl/odroidn2/archive/"
+      armbian_name="Armbian.*noble.*.img.xz"
+      armbian_file=$(curl -s "${armbian_site}" | grep -oE "${armbian_name}" | head -n 1)
+      if [[ -n "${armbian_file}" ]]; then
+          armbian_url="${armbian_site}${armbian_file}"
+      else
+          echo -e "Error: No valid Armbian image found at: [ ${armbian_site} ]"
+          exit 1
+      fi
+  fi
+  echo "ARMBIAN_URL=${armbian_url}" >> ${GITHUB_ENV}
+  
+  # Detect the OS release name from the URL
+  set_release=""
+  ARR_RELEASE=("resolute" "noble" "trixie" "bookworm")
+  i=1
+  for r in ${ARR_RELEASE[*]}; do
+      if [[ "${armbian_url}" == *"${r}"* ]]; then
+          set_release="_${r}"
+          break
+      fi
+      let i++
+  done
+  
+  mkdir -p /builder/build
+  ln -sf /builder/build /home/runner/work/amlogic-s9xxx-armbian/amlogic-s9xxx-armbian/build
+  ln -sf /builder/build /home/runner/work/_actions/ophub/amlogic-s9xxx-armbian/main/build
+  
+  sudo timedatectl set-timezone "${TZ}"
+  echo "build_tag=Armbian${set_release}_arm64_server_$(date +"%Y.%m")" >> ${GITHUB_ENV}
+  echo "status=success" >> ${GITHUB_OUTPUT}
+  shell: /usr/bin/bash -e {0}
+  env:
+    TZ: Etc/UTC
+ln: No such file or directory
+Error: Process completed with exit code 1.          - h618-devboard
           - h66k
           - h68k
           - h69k
